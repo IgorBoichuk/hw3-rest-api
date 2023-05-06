@@ -6,13 +6,12 @@ const contactSchema = Joi.object({
   email: Joi.string().required(),
   phone: Joi.string().required(),
 });
-const contactService = require("../../models/contacts");
+// const contactService = require("../../models/contacts");
+const Contact = require("../../models/contact");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
-  const result = await contactService.listContacts();
-  // res.json({ message: "All contacts" });
-  // res.json(result);
+  const result = await Contact.find();
   try {
     res.json({
       code: 200,
@@ -26,10 +25,10 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:contactId", async (req, res, next) => {
-  // res.json({ message: "Contact by ID" });
   try {
     const { contactId: id } = req.params;
-    const result = await contactService.getContactById(id);
+
+    const result = await Contact.findById({ _id: id });
     if (!result) {
       throw new NotFound(`Contact id ${id} not found`);
     }
@@ -45,14 +44,13 @@ router.get("/:contactId", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
-  // res.json({ message: "template message" });
   try {
     const { error } = contactSchema.validate(req.body);
     if (error) {
       error.status = 400;
       throw error;
     }
-    const result = await contactService.addContact(req.body);
+    const result = await Contact.create(req.body);
     res.status(201).json({
       code: 201,
       data: {
@@ -68,13 +66,13 @@ router.delete("/:contactId", async (req, res, next) => {
   // res.json({ message: "template message" });
   try {
     const { contactId } = req.params;
-    const result = await contactService.removeContact(contactId);
+    const result = await Contact.findOneAndDelete({ _id: contactId });
     if (!result) {
       throw new NotFound(`Contact with id ${contactId} not found`);
     }
     res.json({
       code: 200,
-      message: "Contact deleted",
+      message: `Contact deleted ${contactId}`,
       data: {
         result,
       },
@@ -93,7 +91,7 @@ router.put("/:contactId", async (req, res, next) => {
       throw error;
     }
     const { contactId } = req.params;
-    const result = await contactService.updateById(contactId, req.body);
+    const result = await Contact.findByIdAndUpdate(contactId, req.body);
     if (!result) {
       throw new NotFound(`Contact with id ${contactId} not found`);
     }

@@ -6,7 +6,7 @@ const DB_HOST =
 mongoose
   .connect(DB_HOST)
   .then(() => {
-    console.log("Succes987");
+    console.log("Database connection successful");
     app.listen(3000);
   })
   .catch((error) => {
