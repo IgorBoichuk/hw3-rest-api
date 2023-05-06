@@ -6,8 +6,9 @@ const contactSchema = Joi.object({
   email: Joi.string().required(),
   phone: Joi.string().required(),
 });
-// const contactService = require("../../models/contacts");
+
 const Contact = require("../../models/contact");
+const { default: mongoose } = require("mongoose");
 const router = express.Router();
 
 router.get("/", async (req, res, next) => {
@@ -102,6 +103,38 @@ router.put("/:contactId", async (req, res, next) => {
         result,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/:contactId", async (req, res, next) => {
+  try {
+    const { error } = Contact.validate(req.body);
+    if (error) {
+      error.status = 400;
+      throw error;
+    }
+    const { contactId } = req.params;
+    const { favorite } = req.body;
+    try {
+      const result = await Contact.findByIdAndUpdate(
+        contactId,
+        { favorite },
+        { new: true }
+      );
+      res.json({
+        status: "success",
+        code: 200,
+        data: {
+          result,
+        },
+      });
+    } catch (error) {
+      if (error instanceof mongoose.CastError) {
+        throw new NotFound(`Contact with id ${contactId} not found`);
+      }
+    }
   } catch (error) {
     next(error);
   }
