@@ -1,74 +1,70 @@
-const { Conflict, Unauthorized } = require('http-errors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const { joiRegisterSchema, joiLoginSchema } = require('../models/user');
-const { User } = require('../models');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
-const register = async (req, res) => {
-  const { name, email, password, subscription } = req.body;
-  const { error } = joiRegisterSchema.validate(req.body);
-  if (error) {
-    error.status = 400;
-    throw error;
-  }
+const User = require("../models/user");
+const { HttpError } = require("../helpers");
+const { controllerDecorator } = require("./controller-decorator");
+const { SECRET_KEY } = process.env;
+
+const signUp = async (req, res) => {
+  const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
-    throw new Conflict(`Email in use`);
+    throw HttpError(409, "Email already in use");
   }
-  const hashPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-  const result = await User.create({ name, email, password: hashPassword, subscription });
-  console.log('result: ', result);
+
+  const hashPassword = await bcrypt.hash(password, 10);
+  const newUser = await User.create({ ...req.body, password: hashPassword });
   res.status(201).json({
-    status: 'success',
-    code: 201,
-    data: {
-      user: {
-        name,
-        email,
-        subscription,
-      },
-    },
+    name: newUser.name,
+    email: newUser.email,
+    subscription: newUser.subscription,
   });
 };
 
-const { SECRET_KEY } = process.env;
-
-const login = async (req, res) => {
+const signIn = async (req, res) => {
   const { email, password } = req.body;
-  const { error } = joiLoginSchema.validate(req.body);
-  if (error) {
-    error.status = 400;
-    throw error;
-  }
   const user = await User.findOne({ email });
-  const passCompare = bcrypt.compareSync(password, user.password);
-  if (!user || !passCompare) {
-    throw new Unauthorized('Email or password is wrong');
+  if (!user) {
+    throw HttpError(401, "Invalid password or email");
+  }
+
+  const passwordCompare = await bcrypt.compare(password, user.password);
+  if (!passwordCompare) {
+    throw HttpError(401, "Invalid password or email");
   }
 
   const payload = {
     id: user._id,
   };
-
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '1d' });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
   await User.findByIdAndUpdate(user._id, { token });
   res.json({
-    status: 'success',
-    code: 200,
-    data: {
-      token,
+    token,
+    user: {
+      name: user.name,
+      email: user.email,
+      subscription: user.subscription,
     },
   });
 };
 
+const getCurrent = async (req, res) => {
+  const { name, email } = req.user;
+  res.json({ name, email });
+};
+
 const logout = async (req, res) => {
   const { _id } = req.user;
-  await User.findByIdAndUpdate(_id, { token: null });
-  res.status(204).json();
+  await User.findByIdAndUpdate(_id, { token: "" });
+  res.json({
+    message: "Logout success",
+  });
 };
 
 module.exports = {
-  register,
-  login,
-  logout,
+  signUp: controllerDecorator(signUp),
+  signIn: controllerDecorator(signIn),
+  getCurrent: controllerDecorator(getCurrent),
+  logout: controllerDecorator(logout),
 };

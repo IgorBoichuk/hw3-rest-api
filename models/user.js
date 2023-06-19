@@ -1,58 +1,45 @@
-const { Schema, model } = require('mongoose');
-const Joi = require('joi');
-const bcrypt = require('bcryptjs');
+const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
 
-const userSchema = Schema(
+const validRegex =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
+const userSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: true,
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
-      unique: true,
+      match: validRegex,
+      unique: [true, "User with such email already exists"],
+      required: true,
     },
-
     password: {
       type: String,
-      required: [true, 'Password is required'],
-      minlength: 6,
+      minLength: 6,
+      required: true,
     },
-
     subscription: {
       type: String,
-      enum: ['starter', 'pro', 'business'],
-      default: 'starter',
+      enum: {
+        values: ["starter", "pro", "business"],
+        message: `Subscriptions options: "starter", "pro", "business"`,
+      },
+      default: "starter",
     },
-
+    contacts: [],
     token: {
       type: String,
-      default: null,
+      default: "",
     },
   },
   { versionKey: false, timestamps: true }
 );
 
-userSchema.methods.comparePassword = function (password) {
-  return bcrypt.compareSync(password, this.password);
-};
+userSchema.post("save", handleMongooseError);
 
-const joiRegisterSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  password: Joi.string().min(6).required(),
-});
+const User = model("user", userSchema);
 
-const joiLoginSchema = Joi.object({
-  email: Joi.string().required(),
-  password: Joi.string().min(6).required(),
-});
-
-const User = model('user', userSchema);
-
-module.exports = {
-  User,
-  joiRegisterSchema,
-  joiLoginSchema,
-};
+module.exports = User;
