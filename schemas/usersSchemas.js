@@ -4,9 +4,9 @@ const validRegex =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
 const signUpSchema = Joi.object({
-  name: Joi.string()
-    .required()
-    .messages({ "any.required": `"Name" is a required field ` }),
+  name: Joi.string().messages({
+    "any.required": `"Name" is a required field `,
+  }),
   email: Joi.string().pattern(validRegex).required().messages({
     "any.required": `"Email" is a required field`,
     "string.email": "Email must be a valid email",

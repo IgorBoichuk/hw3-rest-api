@@ -16,9 +16,8 @@ const signUp = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const newUser = await User.create({ ...req.body, password: hashPassword });
   res.status(201).json({
-    name: newUser.name,
-    email: newUser.email,
-    subscription: newUser.subscription,
+    // name: newUser.name,
+    user: { email: newUser.email, subscription: newUser.subscription },
   });
 };
 
@@ -42,7 +41,7 @@ const signIn = async (req, res) => {
   res.json({
     token,
     user: {
-      name: user.name,
+      // name: user.name,
       email: user.email,
       subscription: user.subscription,
     },
@@ -50,15 +49,15 @@ const signIn = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-  const { name, email } = req.user;
-  res.json({ name, email });
+  const { email, subscription } = req.user;
+  res.json({ email, subscription });
 };
 
 const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
-  res.json({
-    message: "Logout success",
+  res.status(204).json({
+    message: "No Content",
   });
 };
 
