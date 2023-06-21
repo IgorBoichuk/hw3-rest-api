@@ -56,7 +56,7 @@ const getCurrent = async (req, res) => {
 const logout = async (req, res) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
-  res.status(200).json({
+  res.status(204).json({
     message: "No Content",
   });
 };
