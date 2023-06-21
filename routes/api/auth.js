@@ -7,13 +7,13 @@ const userController = require("../../controllers/auth-controllers");
 const router = express.Router();
 
 router.post(
-  "/signup",
+  "/register",
   validateBody(schemas.signUpSchema),
   userController.signUp
 );
 
 router.post(
-  "/signin",
+  "/login",
   validateBody(schemas.signInSchema),
   userController.signIn
 );
