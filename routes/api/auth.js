@@ -1,6 +1,6 @@
 const express = require("express");
 
-const { validateBody, authenticate } = require("../../middleware");
+const { validateBody, authenticate, upload } = require("../../middleware");
 const schemas = require("../../schemas/usersSchemas");
 const userController = require("../../controllers/auth-controllers");
 
@@ -8,6 +8,7 @@ const router = express.Router();
 
 router.post(
   "/register",
+  upload.single("photo"),
   validateBody(schemas.signUpSchema),
   userController.signUp
 );

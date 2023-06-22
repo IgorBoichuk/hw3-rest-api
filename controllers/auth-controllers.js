@@ -6,18 +6,39 @@ const { HttpError } = require("../helpers");
 const { controllerDecorator } = require("./controller-decorator");
 const { SECRET_KEY } = process.env;
 
+const path = require("path");
+const fs = require("fs/promises");
+// const gravatar = require("gravatar");
+// const jimp = require("jimp");
+
+const avatarDir = path.resolve("public", "avatars");
+
 const signUp = async (req, res) => {
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarDir, filename);
+
+  await fs.rename(oldPath, newPath);
+  const avatarURL = path.join("avatars", filename);
+
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, "Email already in use");
   }
-
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  // const avatarURL = gravatar.url(email).resize(250, 250, jimp.RESIZE_BEZIER);
+
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
   res.status(201).json({
-    // name: newUser.name,
-    user: { email: newUser.email, subscription: newUser.subscription },
+    user: {
+      email: newUser.email,
+      subscription: newUser.subscription,
+      avatar: avatarURL,
+    },
   });
 };
 

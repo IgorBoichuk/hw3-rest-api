@@ -29,6 +29,10 @@ const userSchema = new Schema(
       },
       default: "starter",
     },
+    avatarURL: {
+      type: String,
+      // required: true,
+    },
     contacts: [],
     token: {
       type: String,
