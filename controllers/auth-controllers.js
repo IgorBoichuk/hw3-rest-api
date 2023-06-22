@@ -8,8 +8,8 @@ const { SECRET_KEY } = process.env;
 
 const path = require("path");
 const fs = require("fs/promises");
-// const gravatar = require("gravatar");
-// const jimp = require("jimp");
+const gravatar = require("gravatar");
+const Jimp = require("jimp");
 
 const avatarDir = path.resolve("public", "avatars");
 
@@ -18,7 +18,7 @@ const signUp = async (req, res) => {
   const newPath = path.join(avatarDir, filename);
 
   await fs.rename(oldPath, newPath);
-  const avatarURL = path.join("avatars", filename);
+  // const avatarURL = path.join("avatars", filename);
 
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -26,7 +26,8 @@ const signUp = async (req, res) => {
     throw HttpError(409, "Email already in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  // const avatarURL = gravatar.url(email).resize(250, 250, jimp.RESIZE_BEZIER);
+
+  const avatarURL = gravatar.url(email).resize(250, 250, Jimp.RESIZE_BEZIER);
 
   const newUser = await User.create({
     ...req.body,
@@ -69,6 +70,21 @@ const signIn = async (req, res) => {
   });
 };
 
+const updateAvatar = async (req, res) => {
+  const { path: tempUpload, filename } = req.file;
+  const img = await Jimp.read(tempUpload);
+  await img.resize(250, 250, Jimp.RESIZE_BEZIER);
+  await img.writeAsync(tempUpload);
+  const resultUpload = path.join(avatarDir, filename);
+  await fs.rename(tempUpload, resultUpload);
+  const avatarURL = path.join("avatars", filename);
+  await User.findByIdAndUpdate(req.user._id, { avatarURL });
+
+  res.json({
+    avatarURL,
+  });
+};
+
 const getCurrent = async (req, res) => {
   const { email, subscription } = req.user;
   res.json({ email, subscription });
@@ -87,4 +103,5 @@ module.exports = {
   signIn: controllerDecorator(signIn),
   getCurrent: controllerDecorator(getCurrent),
   logout: controllerDecorator(logout),
+  updateAvatar: controllerDecorator(updateAvatar),
 };
