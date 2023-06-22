@@ -1,9 +1,9 @@
 {
-  "name": "template",
+  "name": "homework_nodejs",
   "version": "0.0.0",
   "private": true,
   "engines": {
-    "node": "16.x"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./server.js",
@@ -12,10 +12,14 @@
     "lint:fix": "eslint --fix **/*.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
+    "dotenv": "^16.0.3",
     "express": "4.17.1",
     "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongodb": "3.7",
     "mongoose": "^7.1.0",
     "morgan": "1.10.0",
     "nanoid": "^3.3.4"

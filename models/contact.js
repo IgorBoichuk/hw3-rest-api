@@ -1,11 +1,39 @@
 const { Schema, model } = require("mongoose");
+const { handleMongooseError } = require("../helpers");
 
-const contactSchema = new Schema({
-  name: { type: String, require: true },
-  email: { type: String, require: false },
-  phone: { type: String, require: true },
-  favorite: { type: Boolean, default: false },
-});
+const contactSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      match: [
+        /^\d{3}-\d{3}-\d{3}$/,
+        "phone number should be in `xxx-xxx-xxx` format",
+      ],
+      required: true,
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
+  },
+
+  { versionKey: false }
+);
+
+contactSchema.post("save", handleMongooseError);
 
 const Contact = model("contact", contactSchema);
 
