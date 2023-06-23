@@ -16,7 +16,6 @@ const avatarDir = path.resolve("public", "avatars");
 const signUp = async (req, res) => {
   const { path: oldPath, filename } = req.file;
   const newPath = path.join(avatarDir, filename);
-
   await fs.rename(oldPath, newPath);
   // const avatarURL = path.join("avatars", filename);
 
@@ -27,7 +26,7 @@ const signUp = async (req, res) => {
   }
   const hashPassword = await bcrypt.hash(password, 10);
 
-  const avatarURL = gravatar.url(email).resize(250, 250, Jimp.RESIZE_BEZIER);
+  const avatarURL = gravatar.url(email);
 
   const newUser = await User.create({
     ...req.body,

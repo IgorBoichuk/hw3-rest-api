@@ -31,7 +31,6 @@ const userSchema = new Schema(
     },
     avatarURL: {
       type: String,
-      // required: true,
     },
     contacts: [],
     token: {
