@@ -19,6 +19,13 @@ router.post(
   userController.signIn
 );
 
+router.patch(
+  "/avatars",
+  authenticate,
+  upload.single("avatar"),
+  userController.updateAvatar
+);
+
 router.get("/current", authenticate, userController.getCurrent);
 
 router.post("/logout", authenticate, userController.logout);

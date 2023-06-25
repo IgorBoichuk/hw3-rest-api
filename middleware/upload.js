@@ -2,7 +2,6 @@ const multer = require("multer");
 const path = require("path");
 
 const { HttpError } = require("../helpers");
-const Jimp = require("jimp");
 
 const destination = path.resolve("temp");
 
@@ -15,8 +14,6 @@ const storage = multer.diskStorage({
     cb(null, filename);
   },
 });
-
-// const storage = storage2.resize(250, 250, Jimp.RESIZE_BEZIER);
 
 const limits = {
   fileSize: 1024 * 1024,
