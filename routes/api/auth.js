@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.post(
   "/register",
-  upload.single("photo"),
+  // upload.single("photo"),
   validateBody(schemas.signUpSchema),
   userController.signUp
 );

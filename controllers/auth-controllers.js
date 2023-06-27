@@ -14,9 +14,9 @@ const Jimp = require("jimp");
 const avatarDir = path.resolve("public", "avatars");
 
 const signUp = async (req, res) => {
-  const { path: oldPath, filename } = req.file;
-  const newPath = path.join(avatarDir, filename);
-  await fs.rename(oldPath, newPath);
+  // const { path: oldPath, filename } = req.file;
+  // const newPath = path.join(avatarDir, filename);
+  // await fs.rename(oldPath, newPath);
   // const avatarURL = path.join("avatars", filename);
 
   const { email, password } = req.body;
