@@ -3,16 +3,6 @@ require("dotenv").config();
 
 const { UKR_NET_EMAIL } = process.env;
 
-// const nonemailerConfig = {
-//   host: "smtp.ukr.net",
-//   port: 465,
-//   secure: true,
-//   auth: {
-//     user: UKR_NET_EMAIL,
-//     pass: UKR_NET_PASSWORD,
-//   },
-// };
-
 const sendEmail = async (data) => {
   await nodemailer.post("send", { version: "v3.1" }).request({
     Messages: [
