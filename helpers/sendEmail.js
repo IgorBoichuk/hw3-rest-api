@@ -1,4 +1,4 @@
-const nodemailer = require("nodemaier");
+const nodemailer = require("nodemailer");
 require("dotenv").config();
 
 const { UKR_NET_EMAIL } = process.env;
