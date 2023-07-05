@@ -14,11 +14,6 @@ const Jimp = require("jimp");
 const avatarDir = path.resolve("public", "avatars");
 
 const signUp = async (req, res) => {
-  // const { path: oldPath, filename } = req.file;
-  // const newPath = path.join(avatarDir, filename);
-  // await fs.rename(oldPath, newPath);
-  // const avatarURL = path.join("avatars", filename);
-
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user) {
@@ -62,7 +57,6 @@ const signIn = async (req, res) => {
   res.json({
     token,
     user: {
-      // name: user.name,
       email: user.email,
       subscription: user.subscription,
     },

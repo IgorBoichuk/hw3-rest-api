@@ -16,7 +16,6 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use("/users", authRouter);
-// app.use("/users/avatars", authRouter);
 app.use("/api/contacts", contactsRouter);
 
 app.use((req, res) => {
