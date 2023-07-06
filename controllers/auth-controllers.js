@@ -35,7 +35,7 @@ const signUp = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationCode}">Click to confirm your email</a>`,
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${verificationCode}">Click to confirm your email</a>`,
   };
 
   await sendEmail(verifyEmail);
@@ -107,7 +107,7 @@ const resendVerifyEmail = async (req, res) => {
   const verifyEmail = {
     to: email,
     subject: "Verify email",
-    html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${user.verificationCode}"> Click to confirm your email
+    html: `<a target="_blank" href="${BASE_URL}/users/verify/${user.verificationCode}"> Click to confirm your email
     </a>`,
   };
 
