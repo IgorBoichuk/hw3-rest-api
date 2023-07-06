@@ -29,10 +29,14 @@ const signInSchema = Joi.object({
   }),
 });
 
+// const userEmailSchema = Joi.object({
+//   email: Joi.string().pattern(validRegex).required().messages({
+//     "string.email": "Email must be a valid email",
+//   }),
+// });
+
 const userEmailSchema = Joi.object({
-  email: Joi.string().pattern(validRegex).required().messages({
-    "string.email": "Email must be a valid email",
-  }),
+  email: Joi.string().pattern(validRegex).required(),
 });
 
 module.exports = {
